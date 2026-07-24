@@ -439,8 +439,13 @@
 
     <!-- Firebase SDK -->
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+      
+         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getDatabase, ref, set, onValue, remove, update, push, child } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+        // أضفنا هنا سطر استيراد المصادقة (Auth)
+        import { getAuth, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js"; 
+
+
 
         const firebaseConfig = {
             apiKey: "AIzaSyBTgyd63ljkWeXtEVPMyEM64P8CE6agorQ", // استبدلها بمفاتيحك
@@ -452,16 +457,22 @@
             appId: "1:1070409201746:web:c67ce0cf6e7a6e9f92c78b"
         };
 
-        const app = initializeApp(firebaseConfig);
-        const db = getDatabase(app);
 
+         const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+        const auth = getAuth(app); // تهيئة المصادقة
+
+      
         window.db = db;
         window.ref = ref;
         window.set = set;
         window.update = update;
         window.remove = remove;
         window.push = push;
-        window.child = child;
+        window.child = child; 
+        window.auth = auth;
+        window.signInWithEmailAndPassword = signInWithEmailAndPassword;
+        window.signOut = signOut;
 
         let currentStudentId = null;
 
@@ -590,14 +601,24 @@
     </script>
 
     <script>
-        const PASSWORD = "hossein2024"; 
+                // بيانات الدخول المخفية
+        const TEACHER_EMAIL = "hussein@math.com"; // ضع نفس الإيميل الذي أنشأته في Firebase
+        const PASSWORD = "hossein2024"; // كلمة المرور
 
         function login() {
             const pass = document.getElementById("passwordInput").value;
             if (pass === PASSWORD) {
-                document.getElementById("loginScreen").style.display = "none";
-                document.getElementById("appScreen").style.display = "block";
-                window.loadStudents();
+                // تسجيل الدخول لـ Firebase بصمت باستخدام البريد وكلمة المرور
+                signInWithEmailAndPassword(window.auth, TEACHER_EMAIL, PASSWORD)
+                .then(() => {
+                    // إذا نجح الدخول، اعرض الموقع
+                    document.getElementById("loginScreen").style.display = "none";
+                    document.getElementById("appScreen").style.display = "block";
+                    window.loadStudents();
+                })
+                .catch((error) => {
+                    alert("حدث خطأ في الاتصال بقاعدة البيانات: " + error.message);
+                });
             } else {
                 document.getElementById("error-msg").style.display = "block";
             }
@@ -608,7 +629,10 @@
         }
 
         function logout() {
-            location.reload();
+            // تسجيل الخروج من Firebase ثم إعادة تحميل الصفحة
+            signOut(window.auth).then(() => {
+                location.reload();
+            });
         }
 
         // إضافة طالب جديد (مع دفعة أولى إن وجدت)
