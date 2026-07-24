@@ -187,13 +187,19 @@
         }
 
         /* الجدول */
+                /* الجدول */
         .table-container {
             background: var(--white);
             border-radius: 15px;
-            overflow: hidden;
+            overflow-x: auto; /* حل مشكلة الهاتف: يسمح بالتمرير الأفقي */
+            -webkit-overflow-scrolling: touch; /* تمرير سلس على الآيفون */
             box-shadow: 0 5px 15px rgba(0,0,0,0.05);
         }
-        table { width: 100%; border-collapse: collapse; }
+        table { 
+            width: 100%; 
+            border-collapse: collapse; 
+            min-width: 700px; /* يمنع تضاغط الجدول ويحافظ على شكل الأعمدة */
+        }
         thead { background: var(--primary); color: var(--white); }
         th, td { padding: 15px; text-align: center; border-bottom: 1px solid #eee; }
         th { font-weight: 700; font-size: 1.1rem; }
@@ -304,13 +310,38 @@
             font-weight: bold;
         }
 
-        @media (max-width: 768px) {
-            .app-container { padding: 15px; }
+                @media (max-width: 768px) {
+            .app-container { padding: 10px; }
             header { flex-direction: column; gap: 10px; text-align: center; padding: 15px; }
-            .form-grid { grid-template-columns: 1fr; }
-            th, td { font-size: 0.8rem; padding: 10px; }
+            header h1 { font-size: 1.2rem; }
+            .form-grid { grid-template-columns: 1fr; gap: 10px; }
+            th, td { font-size: 0.9rem; padding: 10px; }
             .add-btn { padding: 15px; }
+            
+            /* تحسين شكل الأزرار داخل الجدول على الهاتف */
+            .manage-btn, .delete-student-btn {
+                padding: 5px 8px;
+                font-size: 0.75rem;
+                margin-bottom: 5px;
+                display: inline-block;
+            }
+            
+            /* تحسين النافذة المنبثقة على الهاتف */
+            .modal-content {
+                width: 95%;
+                padding: 15px;
+                margin: 10px;
+            }
+            .payment-record {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            .add-payment-form {
+                flex-direction: column;
+            }
         }
+        
     </style>
 </head>
 <body>
